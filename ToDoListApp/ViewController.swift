@@ -10,18 +10,19 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-    let itemArray = ["Find Mike", "Buy Eggos","Destroy Domogron"]
-    
+    var itemArray = ["Find Mike", "Buy Eggos","Destroy Domogron"]
+    var defaults = UserDefaults.standard
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String]
+        {
+            itemArray = items
+        }
+        
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
+    
     //MARK: tableview datasource methods
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell =  tableView.dequeueReusableCell(withIdentifier: "todoListCell", for: indexPath)
@@ -47,5 +48,26 @@ class ToDoListViewController: UITableViewController {
         }
         tableView.deselectRow(at: indexPath, animated: false)
     }
+    
+    //MARK - bar button Item pressed
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+         var textfield = UITextField()
+        
+        let alert = UIAlertController(title: "Add new Todoey Item", message: "", preferredStyle: .alert)
+        alert.addTextField { (alertTextfield) in
+            alertTextfield.placeholder = "create new item"
+            textfield = alertTextfield
+        }
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            self.itemArray.append(textfield.text!)
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
+            self.tableView.reloadData()
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
